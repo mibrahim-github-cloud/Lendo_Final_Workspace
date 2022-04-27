@@ -9,4 +9,6 @@ public interface PostServiceV2 {
 
 	List<PostDtoV2> getPosts();
 	
+	PostDtoV2 getPost_Comments(String postId);
+	
 }

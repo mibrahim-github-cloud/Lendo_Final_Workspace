@@ -3,6 +3,8 @@ package com.genesyslab.user.api.service.v2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import com.genesyslab.user.api.exception.handling.NotFoundException;
 import com.genesyslab.user.api.model.shared.v2.PostDtoV2;
 import com.genesyslab.user.api.model.shared.v2.UserDtoV2;
-import com.genesyslab.user.api.model.v2.PostResponseModelV2;
 import com.genesyslab.user.api.model.v2.UserResponseModelV2;
 import com.genesyslab.user.api.service.client.PostsServiceClient;
 
@@ -66,7 +67,7 @@ public class UserServiceImplV2 implements UserServiceV2 {
 			// return new
 			// User(user.get().getEmail(),user.get().getEncryptedPassword(),true,true,true,true,
 			// new ArrayList<>());
-			return new User(user.get().getId(), user.get().getId(), true, true, true, true, new ArrayList<>());
+			return new User(user.get().getId(), user.get().getEmail(), true, true, true, true, new ArrayList<>());
 
 		} catch (Exception e) {
 			throw new UsernameNotFoundException(username);
@@ -88,7 +89,6 @@ public class UserServiceImplV2 implements UserServiceV2 {
 			throw new UsernameNotFoundException(email);
 		return user.get();
 
-		
 	}
 
 	@Override
@@ -103,12 +103,34 @@ public class UserServiceImplV2 implements UserServiceV2 {
 
 		if (!user.isPresent())
 			throw new NotFoundException("Resource Not Found...");
-		
+
 		UserDtoV2 userDtoV2 = user.get();
-		List<PostDtoV2> user_Posts = postsServiceClient.getUser_Posts(email);
-		userDtoV2.setUserPosts(user_Posts);
-		
-		
+//		List<PostDtoV2> user_Posts = postsServiceClient.getUser_Posts(email);
+
+		// Retrieving User_Posts
+		CompletableFuture<List<PostDtoV2>> user_Posts = CompletableFuture.supplyAsync(() -> {
+			String getUserPostUrl = String.format(environment.getProperty("user.posts.url"), email);
+			ResponseEntity<List<PostDtoV2>> postResponse = restTemplate.exchange(getUserPostUrl, HttpMethod.GET, null,
+					new ParameterizedTypeReference<List<PostDtoV2>>() {
+					});
+			List<PostDtoV2> userPosts = postResponse.getBody();
+
+			return userPosts;
+		}).handle((msg, ex) -> {
+			if (ex != null) {
+				return new ArrayList<>();
+			} else {
+				return msg;
+			}
+		});
+		;
+		try {
+			userDtoV2.setUserPosts(user_Posts.get());
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return userDtoV2;
 	}
 

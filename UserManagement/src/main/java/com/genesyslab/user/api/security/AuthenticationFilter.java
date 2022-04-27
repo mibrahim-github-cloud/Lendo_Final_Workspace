@@ -44,7 +44,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 //					new UsernamePasswordAuthenticationToken(cred.getEmail(), cred.getPassword(), new ArrayList<>()));
 			
 			return getAuthenticationManager().authenticate(
-					new UsernamePasswordAuthenticationToken(cred.getUserId(), cred.getUserId(), new ArrayList<>()));
+					new UsernamePasswordAuthenticationToken(cred.getUserId(), cred.getEmail(), new ArrayList<>()));
 
 		} catch (IOException e) {
 			throw new RuntimeException();
@@ -66,7 +66,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 				.signWith(SignatureAlgorithm.HS512, "jkmlijorknlmmpkuhjnklmyg").compact();
 
 		response.addHeader("token", token);
-		response.addHeader("userid", userDto.getEmail());
+		response.addHeader("userid", userDto.getId());
 
 	}
 	

@@ -1,12 +1,15 @@
 package com.genesyslab.user.api.model.v2;
 
-public class UserResponseModelV2 {
+import java.util.List;
+
+public class UserPostsResponseModelV2 {
 	
 	private String id;
 	private String name;
 	private String email;
 	private String gender;
 	private String status;
+	private List<PostResponseModelV2> user_posts;
 	
 	public String getId() {
 		return id;
@@ -37,6 +40,15 @@ public class UserResponseModelV2 {
 	}
 	public void setStatus(String status) {
 		this.status = status;
-	}	
+	}
+	public List<PostResponseModelV2> getUser_posts() {
+		return user_posts;
+	}
+	public void setUser_posts(List<PostResponseModelV2> user_posts) {
+		this.user_posts = user_posts;
+	}
+	
+	
+	
 		
 }

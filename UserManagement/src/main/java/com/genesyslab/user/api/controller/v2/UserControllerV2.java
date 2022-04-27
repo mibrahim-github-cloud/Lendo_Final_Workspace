@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.genesyslab.user.api.model.shared.v2.UserDtoV2;
+import com.genesyslab.user.api.model.v2.UserPostsResponseModelV2;
 import com.genesyslab.user.api.model.v2.UserResponseModelV2;
 import com.genesyslab.user.api.service.v2.UserServiceV2;
 
@@ -37,11 +40,13 @@ public class UserControllerV2 {
 	}
 	
 	@GetMapping("/user_posts/{userId}")
-	public ResponseEntity<UserResponseModelV2> getUser_Posts(@PathVariable("userId") String userId) {
+	public ResponseEntity<UserPostsResponseModelV2> getUser_Posts(@PathVariable("userId") String userId) {
 
 		UserDtoV2 userDtoV2 = userServiceV2.getUser_Posts(userId);
 
-		UserResponseModelV2 returnValue = new ModelMapper().map(userDtoV2, UserResponseModelV2.class);
+		ModelMapper mapper = new ModelMapper();
+		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+		UserPostsResponseModelV2 returnValue = mapper.map(userDtoV2, UserPostsResponseModelV2.class);
 
 		return ResponseEntity.status(HttpStatus.OK).body(returnValue);
 

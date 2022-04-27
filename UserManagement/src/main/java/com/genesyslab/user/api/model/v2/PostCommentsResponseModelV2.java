@@ -1,22 +1,14 @@
-package com.genesyslab.user.api.model.shared.v2;
+package com.genesyslab.user.api.model.v2;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class PostDtoV2 implements Serializable {
-
+public class PostCommentsResponseModelV2 {
 	
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7140354119998188100L;
 	private String id;
 	private String user_id;
 	private String title;
 	private String body;
-	private List<CommentDtoV2> post_comments;
-	
+	List<CommentResponseModelV2> post_comments;
 	public String getId() {
 		return id;
 	}
@@ -41,11 +33,13 @@ public class PostDtoV2 implements Serializable {
 	public void setBody(String body) {
 		this.body = body;
 	}
-	public List<CommentDtoV2> getPost_comments() {
+	public List<CommentResponseModelV2> getPost_comments() {
 		return post_comments;
 	}
-	public void setPost_comments(List<CommentDtoV2> post_comments) {
+	public void setPost_comments(List<CommentResponseModelV2> post_comments) {
 		this.post_comments = post_comments;
 	}
+	
+	
 	
 }
